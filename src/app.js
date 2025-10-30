@@ -1,26 +1,38 @@
-const express =  require('express');
-
+const express = require("express");
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-app.use('/',(req,res)=>{
-  res.end("hehhehe")
-})
+app.post("/signup", async (req, res) => {
+  // Creating a new instance of the user model
+  const user = new User({
+    firstName: "Kajal",
+    lastName: "Tiwari",
+    emailId: "kanjal55567@gmail.com",
+    password: "kajal@123",
+  });
 
-// this will only handle GET call to /user
-app.get("/user" , (req,res)=>{
-  res.send({firstNAme:"KAjal"})
-})
-
-app.post('/user',(req,res)=>{
-  console.log("Save data to the databsee")
-  res.send("Data successfully saved to the database")
+  try {
+    await user.save();
+    res.send("User added successfully");
+  } catch (err) {
+    res.status(400).send("Error");
+  }
 });
 
-app.delete('/user',(req,res)=>{
-  
-  res.send("Deleted successfully")
-})
+connectDB()
+  .then(() => {
+    console.log("Database connected successfully");
+    app.listen(3000, () => {
+      console.log("http://localhost:3000/");
+    });
+  })
+  .catch((err) => {
+    console.log("Database is not  connected");
+  });
 
-app.listen(3000 , ()=>{
-  console.log("http://localhost:3000/");
-});
+//first of all connect databse , then do app.listen.
+
+// always do like this order.
+
+// whenever you are saving the data , getting the data , etc . then it returns a promise , and we have to use asycn await.
