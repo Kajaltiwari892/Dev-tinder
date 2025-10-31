@@ -3,14 +3,11 @@ const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
 
+// we have applied here middle ware  taki wo hrr route ke liye json data ko js object mei convert krke body mei push rke uske liye express json bnaya h .
+app.use(express.json());
 app.post("/signup", async (req, res) => {
   // Creating a new instance of the user model
-  const user = new User({
-    firstName: "Kajal",
-    lastName: "Tiwari",
-    emailId: "kanjal55567@gmail.com",
-    password: "kajal@123",
-  });
+  const user = new User(req.body);
 
   try {
     await user.save();
