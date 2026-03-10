@@ -6,8 +6,8 @@
 - Push some documents using API calls from postman
 - Error Handling using try catch
 
-- Add th4e express.json middleware to your app
-- Make your signup API dynamic to recieve data from the end user
+- Add thre express.json middleware to your app
+- Make your signup API dynamic to recieve data from the end user.
 
 # Dev Tinder needs:
 
