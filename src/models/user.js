@@ -10,15 +10,6 @@ const userSchema = new mongoose.Schema({
   emailId: {
     type: String,
   },
-  password: {
-    type: String,
-  },
-  age: {
-    type: String,
-  },
-  gender: {
-    type: String,
-  },
 });
 
 // always model name starts with captial letter

@@ -6,16 +6,70 @@ const User = require("./models/user");
 // we have applied here middle ware  taki wo hrr route ke liye json data ko js object mei convert krke body mei push rke uske liye express json bnaya h .
 app.use(express.json());
 app.post("/signup", async (req, res) => {
-  // Creating a new instance of the user model
+  // Creating a new instance of the user model  
   const user = new User(req.body);
-
   try {
-    await user.save();
+    await user.save(); 
     res.send("User added successfully");
   } catch (err) {
     res.status(400).send("Error");
   }
 });
+
+// get user by email , hamlog wo emailid ke person ko nikale jiska email id request mei bheja h 
+// app.get("/user",async (req,res)=>{
+//   const userEmail = req.body.emailId;
+// try{
+//   // here diff btw find & findOne return array and can find all the related users , but findOne() return only one user.
+// const user =  await User.find({emailId : userEmail})
+// if(user.length === 0){
+//   res.send(404).send("user not found");
+// }
+// else{
+//   res.send(user);
+// }
+// }catch(err){
+//  res.status(400).send("Something went wrong...!")
+// }
+// })
+
+app.get("/user",async(req,res)=>{
+
+  const userEmail = req.body.emailId;
+  try {
+    const user =  await userEmail.find({emailID:userEmail})
+    if(user.length === 0 ){
+      res.send("user not found")
+    }else{
+      res.send("user found")
+    }
+  } catch (error) {
+    res.send("Something went wrong")
+  }
+
+})
+
+// delete the user
+
+app.delete("/user" , async(req,res)=>{
+  const userId = req.body.userId
+  try{
+  const user = await User.findByIdAndDelete({   userId})
+  res.send("user deleted")
+}catch(err){
+    res.send("something went wrong , user not deleted")
+  }
+})
+
+// feed API - Get /feed - get all the users from the database
+app.get("/feed",async (req,res)=>{
+  try{
+ const users = await User.find({})
+ res.send(users);
+  }catch(err){
+    res.status(400).send("Something went wrong...!")
+  }
+})
 
 connectDB()
   .then(() => {
@@ -33,3 +87,4 @@ connectDB()
 // always do like this order.
 
 // whenever you are saving the data , getting the data , etc . then it returns a promise , and we have to use asycn await.
+
