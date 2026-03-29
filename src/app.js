@@ -5,7 +5,7 @@ const User = require("./models/user");
 
 // we have applied here middle ware  taki wo hrr route ke liye json data ko js object mei convert krke body mei push rke uske liye express json bnaya h .
 app.use(express.json());
-app.post("/signup", async (req, res) => {
+app.post("/", async (req, res) => {
   // Creating a new instance of the user model  
   const user = new User(req.body);
   try {
@@ -54,10 +54,23 @@ app.get("/user",async(req,res)=>{
 app.delete("/user" , async(req,res)=>{
   const userId = req.body.userId
   try{
-  const user = await User.findByIdAndDelete({   userId})
+  const user = await User.findByIdAndDelete(userId)
   res.send("user deleted")
 }catch(err){
     res.send("something went wrong , user not deleted")
+  }
+})
+
+// edit the user
+
+app.patch("/user", async(req,res)=>{
+  const userId = req.body.userId
+  const updatedData = req.body
+  try {
+    const user = await User.findByIdAndUpdate(userId,updatedData)
+    res.send("user updated")
+  } catch (error) {
+    res.send("something went wrong , user not updated")
   }
 })
 
