@@ -20,31 +20,31 @@ app.post("/signup", async (req, res) => {
 
 // get user by email , hamlog wo emailid ke person ko nikale jiska email id request mei bheja h 
 // app.get("/user",async (req,res)=>{
-  //   const userEmail = req.body.emailId;
-  // try{
-    //   // here diff btw find & findOne return array and can find all the related users , but findOne() return only one user.
-    // const user =  await User.find({emailId : userEmail})
-    // if(user.length === 0){
-      //   res.send(404).send("user not found");
-      // }
-      // else{
-        //   res.send(user);
-        // }
-        // }catch(err){
-          //  res.status(400).send("Something went wrong...!")
-          // }
-          // })
-          
-          app.post("/", async (req, res) => {
-            // Creating a new instance of the user model  
-            const user = new User(req.body);
-            try {
-              await user.save(); 
-              res.send("User added successfully");
-            } catch (err) {
-              res.status(400).send("Error");
-            }
-          });
+//   const userEmail = req.body.emailId;
+// try{
+//   // here diff btw find & findOne return array and can find all the related users , but findOne() return only one user.
+// const user =  await User.find({emailId : userEmail})
+// if(user.length === 0){
+//   res.send(404).send("user not found");
+// }
+// else{
+//   res.send(user);
+// }
+// }catch(err){
+//  res.status(400).send("Something went wrong...!")
+// }
+// })
+
+app.post("/", async (req, res) => {
+  // Creating a new instance of the user model  
+  const user = new User(req.body);
+  try {
+    await user.save();
+    res.send("User added successfully");
+  } catch (err) {
+    res.status(400).send("Error");
+  }
+});
 
 
 app.get("/user", async (req, res) => {
@@ -63,34 +63,40 @@ app.get("/user", async (req, res) => {
 
 // delete the user
 
-app.delete("/user" , async(req,res)=>{
+app.delete("/user", async (req, res) => {
   const userId = req.body.userId
-  try{
-  const user = await User.findByIdAndDelete(userId)
-  res.send("user deleted")
-}catch(err){
+  try {
+    const user = await User.findByIdAndDelete(userId)
+    res.send("user deleted")
+  } catch (err) {
     res.send("something went wrong , user not deleted")
   }
 })
 
 // edit the user
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
 
+
   try {
+
+
+    const ALLOWED_UPDATES = ["userId",
+      "photoUrl", "about", "gender", "age", "skills"]
+    const isUpdateAllowed = Object.keys(data).every(k => ALLOWED_UPDATES.includes(k))
+    if (!isUpdateAllowed) {
+      res.status(400).send("update not allowed")
+    }
+
+if(data?.skills.length >10){
+  throw new Error("SKills cannot be more than 10")
+}
+
     // Basic validation: ensure userId is provided
     if (!userId) {
       return res.status(400).send("userId is required for updating");
-    }
-
-    // Optional: limit what can be updated for security
-    const ALLOWED_UPDATES = ["firstName", "lastName", "gender", "age", "about", "skills", "photoUrl"];
-    const isUpdateAllowed = Object.keys(data).every((update) => ALLOWED_UPDATES.includes(update) || update === "userId");
-
-    if (!isUpdateAllowed) {
-      return res.status(400).send("Update not allowed for some fields");
     }
 
     const user = await User.findByIdAndUpdate(userId, data, {
@@ -109,11 +115,11 @@ app.patch("/user", async (req, res) => {
 });
 
 // feed API - Get /feed - get all the users from the database
-app.get("/feed",async (req,res)=>{
-  try{
- const users = await User.find({})
- res.send(users);
-  }catch(err){
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find({})
+    res.send(users);
+  } catch (err) {
     res.status(400).send("Something went wrong...!")
   }
 })
