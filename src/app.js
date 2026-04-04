@@ -14,7 +14,7 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User added successfully");
   } catch (err) {
-    res.status(400).send("Error");
+    res.status(400).send("Error saving the user:" + err.message);
   }
 });
 
@@ -50,7 +50,7 @@ app.post("/", async (req, res) => {
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
   try {
-    const user = await userEmail.find({ emailId: userEmail });
+    const user = await User.find({ emailId: userEmail });
     if (user.length === 0) {
       res.status(404).send("User not found");
     } else {
