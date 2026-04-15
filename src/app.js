@@ -90,9 +90,9 @@ app.patch("/user/:userId", async (req, res) => {
       res.status(400).send("update not allowed")
     }
 
-if(data?.skills.length >10){
-  throw new Error("SKills cannot be more than 10")
-}
+    if (data?.skills.length > 10) {
+      throw new Error("SKills cannot be more than 10")
+    }
 
     // Basic validation: ensure userId is provided
     if (!userId) {
