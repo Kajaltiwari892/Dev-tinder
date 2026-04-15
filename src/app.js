@@ -7,28 +7,19 @@ const bcrypt = require("bcrypt")
 const validator = require("validator")
 const cookieParser = require("cookie-parser")
 const jwt = require('jsonwebtoken')
+const {userAuth} = require("./middleware/auth")
 
 // we have applied here middle ware  taki wo hrr route ke liye json data ko js object mei convert krke body mei push rke uske liye express json bnaya h .
 app.use(express.json());
 app.use(cookieParser())
 
 app.post("/signup", async (req, res) => {
-  //  step 1  before saving user in database , we have to do validation of data
-
-  //step 2:  encrypt the password 
-
-  //step 3:  save the user in database
-
-
-
-
+ 
   try {
     // validation of  data
     validateSignupData(req)
 
-
     const { firstName, lastName, emailId, password } = req.body
-
 
     // encrypt the password
     const passwordHash = await bcrypt.hash(password, 10)
@@ -46,22 +37,6 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// get user by email , hamlog wo emailid ke person ko nikale jiska email id request mei bheja h 
-// app.get("/user",async (req,res)=>{
-//   const userEmail = req.body.emailId;
-// try{
-//   // here diff btw find & findOne return array and can find all the related users , but findOne() return only one user.
-// const user =  await User.find({emailId : userEmail})
-// if(user.length === 0){
-//   res.send(404).send("user not found");
-// }
-// else{
-//   res.send(user);
-// }
-// }catch(err){
-//  res.status(400).send("Something went wrong...!")
-// }
-// })
 
 app.post("/", async (req, res) => {
   // Creating a new instance of the user model  
@@ -107,98 +82,25 @@ app.post("/login", async (req, res) => {
 })
 
 // profile get
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth,async (req, res) => {
 
-  const cookie = req.cookies
-
-  const { token } = cookie
-  //  validate  my token
-
-  const decodedMessage = await jwt.verify(token, "DEV@Tinder$789")
-  const { _id} = decodedMessage
-  console.log("loggedin user is" + _id)
-  console.log(decodedMessage)
-  console.log(cookie)
-  res.send("reading cookie")
-
-})
-
-app.get("/user", async (req, res) => {
-  const userEmail = req.body.emailId;
   try {
-    const user = await User.find({ emailId: userEmail });
-    if (user.length === 0) {
-      res.status(404).send("User not found");
-    } else {
-      res.send(user);
-    }
-  } catch (error) {
-    res.status(400).send("Something went wrong");
+    const user = req.user
+    res.send(user)
+ 
   }
-});
-
-// delete the user
-
-app.delete("/user", async (req, res) => {
-  const userId = req.body.userId
-  try {
-    const user = await User.findByIdAndDelete(userId)
-    res.send("user deleted")
-  } catch (err) {
-    res.send("something went wrong , user not deleted")
+  catch(err) {
+    res.status(400).send("Error" + err.message)
   }
 })
 
-// edit the user
+app.post("/sendConnectionRequest", async (req,res) =>{
+  // Sending a connection request
+  console.log("Sending a connection request");
 
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params?.userId;
-  const data = req.body;
-
-
-  try {
-
-
-    const ALLOWED_UPDATES = ["userId",
-      "photoUrl", "about", "gender", "age", "skills"]
-    const isUpdateAllowed = Object.keys(data).every(k => ALLOWED_UPDATES.includes(k))
-    if (!isUpdateAllowed) {
-      res.status(400).send("update not allowed")
-    }
-
-    if (data?.skills.length > 10) {
-      throw new Error("SKills cannot be more than 10")
-    }
-
-    // Basic validation: ensure userId is provided
-    if (!userId) {
-      return res.status(400).send("userId is required for updating");
-    }
-
-    const user = await User.findByIdAndUpdate(userId, data, {
-      returnDocument: "after",
-      runValidators: true,
-    });
-
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-
-    res.send("User updated successfully");
-  } catch (error) {
-    res.status(400).send("Update failed: " + error.message);
-  }
-});
-
-// feed API - Get /feed - get all the users from the database
-app.get("/feed", async (req, res) => {
-  try {
-    const users = await User.find({})
-    res.send(users);
-  } catch (err) {
-    res.status(400).send("Something went wrong...!")
-  }
+  res.send("Connection request sent successfully");
 })
+
 
 connectDB()
   .then(() => {
@@ -216,5 +118,3 @@ connectDB()
 // always do like this order.
 
 // whenever you are saving the data , getting the data , etc . then it returns a promise , and we have to use asycn await.
-
-// 44:20 epi1 0
