@@ -2,15 +2,43 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const { validateSignupData } = require("../utils/validation")
+const bcrypt = require("bcrypt")
+const validator = require("validator")
+const cookieParser = require("cookie-parser")
+const jwt = require('jsonwebtoken')
 
 // we have applied here middle ware  taki wo hrr route ke liye json data ko js object mei convert krke body mei push rke uske liye express json bnaya h .
 app.use(express.json());
+app.use(cookieParser())
 
 app.post("/signup", async (req, res) => {
-  // Creating a new instance of the user model  
-  const user = new User(req.body);
+  //  step 1  before saving user in database , we have to do validation of data
+
+  //step 2:  encrypt the password 
+
+  //step 3:  save the user in database
+
+
+
 
   try {
+    // validation of  data
+    validateSignupData(req)
+
+
+    const { firstName, lastName, emailId, password } = req.body
+
+
+    // encrypt the password
+    const passwordHash = await bcrypt.hash(password, 10)
+
+    // Creating a new instance of the user model  
+    const user = new User({
+      firstName, lastName, emailId, password: passwordHash
+    });
+
+    console.log(passwordHash)
     await user.save();
     res.send("User added successfully");
   } catch (err) {
@@ -46,6 +74,54 @@ app.post("/", async (req, res) => {
   }
 });
 
+
+// Login api
+app.post("/login", async (req, res) => {
+  try {
+
+    const { emailId, password } = req.body
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid crendentials")
+    }
+    // here passowrd is coming from users request and user.password is we are checking from db, that is is creect or not
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (isPasswordValid) {
+
+      // 1.create jwt token
+      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$789")
+      console.log(token)
+      // 2. add token to cookie  and send response to user
+      res.cookie("token", token)
+
+      res.send("user login successful")
+    } else {
+      throw new Error("Invalid crendentials")
+    }
+
+  }
+  catch (err) {
+    res.status(400).send("Error" + err.message)
+  }
+
+})
+
+// profile get
+app.get("/profile", async (req, res) => {
+
+  const cookie = req.cookies
+
+  const { token } = cookie
+  //  validate  my token
+
+  const decodedMessage = await jwt.verify(token, "DEV@Tinder$789")
+  const { _id} = decodedMessage
+  console.log("loggedin user is" + _id)
+  console.log(decodedMessage)
+  console.log(cookie)
+  res.send("reading cookie")
+
+})
 
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
@@ -140,3 +216,5 @@ connectDB()
 // always do like this order.
 
 // whenever you are saving the data , getting the data , etc . then it returns a promise , and we have to use asycn await.
+
+// 44:20 epi1 0

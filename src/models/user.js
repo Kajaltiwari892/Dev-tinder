@@ -40,11 +40,21 @@ validate(value){
   },
   password:{
     type:String,
-    required:true
+    required:true,
+    validate(value){
+  if(!validator.isStrongPassword(value)){
+    throw new Error("Password is not strong")
+  }
+} 
   } ,
   photoUrl:{
     type:String,
-    default:"https://thumbs.dreamstime.com/b/fashionable-female-dummy-1424069.jpg"
+    default:"https://thumbs.dreamstime.com/b/fashionable-female-dummy-1424069.jpg",
+    validate(value){
+  if(!validator.isURL(value)){
+    throw new Error("Invalid URL")
+  }
+}
   },
   about:{
     type:String,
