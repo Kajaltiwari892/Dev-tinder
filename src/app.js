@@ -60,14 +60,13 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid crendentials")
     }
     // here passowrd is coming from users request and user.password is we are checking from db, that is is creect or not
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isPasswordValid = user.validatePassword(password)
     if (isPasswordValid) {
 
       // 1.create jwt token
-      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$789")
-      console.log(token)
+      const token = await user.getJWT()
       // 2. add token to cookie  and send response to user
-      res.cookie("token", token)
+      res.cookie("token", token ,{expires: new Date(Date.now() + 8*3600000)})
 
       res.send("user login successful")
     } else {
@@ -94,11 +93,15 @@ app.get("/profile", userAuth,async (req, res) => {
   }
 })
 
-app.post("/sendConnectionRequest", async (req,res) =>{
+app.post("/sendConnectionRequest",userAuth, async (req,res) =>{
+
+  const user = req.user;
+
+
   // Sending a connection request
   console.log("Sending a connection request");
 
-  res.send("Connection request sent successfully");
+  res.send(user.firstName + " sent a connection request");
 })
 
 
