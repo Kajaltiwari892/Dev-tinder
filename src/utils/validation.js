@@ -14,6 +14,15 @@ if(!firstName.length || !lastName ){
 }
 
 }
+
+const validateProfileEditData = (req) =>{
+    const allowedEditedFields =  ["firstName","lastName","emailId","photoUrl", "gender", "age","about","skills"]
+   const isEditAllowed=  Object.keys(req.body).every(field => allowedEditedFields.includes(field));
+
+ return isEditAllowed
+}
+
 module.exports =  {
-    validateSignupData
+    validateSignupData,
+    validateProfileEditData
 };
