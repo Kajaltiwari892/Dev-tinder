@@ -74,4 +74,21 @@ authRouter.post("/logout" , async(req,res)=>{
 })
 
 
+// forget password api
+authRouter.post("/forget-password", async (req, res) => {
+  try {
+    const { emailId } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Logic to send password reset email would go here
+    res.json({ message: "Password reset link sent to your email!" });
+
+  } catch (error) {
+    res.status(400).send("Error: " + error.message);
+  }
+});
+
 module.exports = authRouter;

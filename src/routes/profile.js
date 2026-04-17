@@ -26,7 +26,13 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
             return res.status(400).send("Invalid fields")
 
         const loggedInUser = req.user;
-        console.log(loggedInUser);
+        // console.log(loggedInUser);
+
+       Object.keys(req.body).forEach(key =>  (loggedInUser[key] = req.body[key]))
+
+        // console.log(loggedInUser);
+        await loggedInUser.save();
+        res.json({message:`${loggedInUser.firstName} , Profile updated successfully`, data: loggedInUser})
 
     } catch (error) {
         res.status(400).send("Error" + error.message)
@@ -34,4 +40,3 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
 })
 
 module.exports = profileRouter;
-// 1:34

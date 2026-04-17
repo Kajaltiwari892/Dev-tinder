@@ -4,6 +4,7 @@
 - POSt /Signup
 - POST /login
 - POST /logout
+- POST /forget-password
 
 ## profileRouter
 - GET /profile/view
