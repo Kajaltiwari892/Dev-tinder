@@ -78,9 +78,9 @@ enum:{
 }
 );
 
-User.find({firstName:"Kajal", lastName:"Kumari"})
 
 userSchema.index({firstName:1, lastName:1})
+userSchema.index({gender:1})
 
 
 // here always use old function not arrow function
