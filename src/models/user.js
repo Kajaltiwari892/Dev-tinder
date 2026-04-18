@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required:true,
+    index:true,
     minLength:3,
     maxLength:30,
 
@@ -76,6 +77,11 @@ enum:{
   timestamps:true
 }
 );
+
+User.find({firstName:"Kajal", lastName:"Kumari"})
+
+userSchema.index({firstName:1, lastName:1})
+
 
 // here always use old function not arrow function
 userSchema.methods.getJWT =async function(){

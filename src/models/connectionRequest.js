@@ -22,7 +22,19 @@ const connectionRequestSchema = new mongoose.Schema({
     timestamps: true
 }
 
-)
+);
 
-const ConnectionRequestModel = mongoose.model("connectionRequest",connectionRequestSchema)
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+
+// here pre is like middleware which perform before saving the data , here save is the event
+connectionRequestSchema.pre("save" , function (next){
+    const connectionRequest = this;
+    // check if from and to userid is same as to to userid
+    if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
+        throw new Error("Cannot send connection request to yourself")
+    }
+    next();
+}) 
+
+const ConnectionRequestModel = new mongoose.model("connectionRequest",connectionRequestSchema)
 module.exports = ConnectionRequestModel
