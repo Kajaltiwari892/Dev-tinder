@@ -23,7 +23,7 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.log("Database is not  connected");
+    console.log("Database is not  connected " + err.message);
   });
 
 //first of all connect databse , then do app.listen.

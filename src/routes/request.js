@@ -2,7 +2,8 @@ const express = require('express');
 const { userAuth } = require("../middleware/auth");
 const ConnectionRequest = require('../models/connectionRequest');
 const requestRouter = express.Router();
-const User = require("../models/user")
+const User = require("../models/user");
+
 
 requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
 
@@ -16,9 +17,6 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     if(!allowedStatus.includes(status)){
       return res.status(400).json({message:"Invalid status" + status});
     }
-
-
-   
 
     
   const toUser =  await User.findById(toUserId);
@@ -60,5 +58,35 @@ res.json({
   }
 })
 
+requestRouter.post("/request/review/:status/:requestId", userAuth, async(req,res)=>{
+  try {
+    
+ const loggedInUser = req.user;
+
+ const {status, requestId} = req.params;
+ 
+ const allowedStatus =["accepted","rejected"]
+ if(!allowedStatus.includes(status)){
+  return res.status(400).json({message:"Status not allowed"});
+ }
+
+
+ const connectionRequest = await ConnectionRequest.findOne({
+  _id: requestId,
+  toUserId:loggedInUser._id,
+  status:"interested"
+ })
+//  validate the status
+// Kajal --> palak
+// loggedInUser  to to userid
+// status = interested
+// requet if should be valid
+
+  } catch (error) {
+    
+  }
+})
 
 module.exports = requestRouter;
+
+// 17:37 epi 13 sea 2
