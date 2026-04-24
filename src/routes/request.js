@@ -76,11 +76,15 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async(req,res
   toUserId:loggedInUser._id,
   status:"interested"
  })
-//  validate the status
-// Kajal --> palak
-// loggedInUser  to to userid
-// status = interested
-// requet if should be valid
+if(!connectionRequest){
+  return res.status(404).json({message:"Connection request not found"})
+}
+
+connectionRequest.status = status
+
+const data = await connectionRequest.save();
+
+res.json({message:"Connection request " + status , data})
 
   } catch (error) {
     
@@ -88,5 +92,3 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async(req,res
 })
 
 module.exports = requestRouter;
-
-// 17:37 epi 13 sea 2
