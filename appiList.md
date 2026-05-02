@@ -24,3 +24,14 @@
 
 <!-- Status: ignored, interested, accepted, rejected -->
 
+<!-- how pagination done in mongodb: it done with limit and skip -->
+ suppose we have: 
+ /feed?page=1&limit=10
+ - page 1 -> 0 to 10 documents
+ - page 2 -> 11 to 20 documents
+ - page 3 -> 21 to 30 documents
+
+
+  .skip(0).limit(10)
+  formaula for skip = (page-1) * limit
+  
