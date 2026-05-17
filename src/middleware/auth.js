@@ -6,6 +6,9 @@ const User = require("../models/user");
   //  Read the token from the req cookies
 
   try{const {token} = req.cookies
+  if(!token){
+    return res.status(401).send("You are not  logged in!")
+  }
 
   // validate the token 
   const decodedObj = await jwt.verify(token, "DEV@Tinder$789")

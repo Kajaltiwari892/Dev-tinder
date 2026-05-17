@@ -52,7 +52,7 @@ authRouter.post("/login", async (req, res) => {
       // 2. add token to cookie  and send response to user
       res.cookie("token", token ,{expires: new Date(Date.now() + 8*3600000)})
 
-      res.send("user login successful")
+      res.json({message : "Login successful", user})
     } else {
       throw new Error("Invalid crendentials")
     }

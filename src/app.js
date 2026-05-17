@@ -2,8 +2,13 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const cookieParser = require("cookie-parser")
+const cors = require("cors")
 
 // we have applied here middle ware  taki wo hrr route ke liye json data ko js object mei convert krke body mei push rke uske liye express json bnaya h .
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}))
 app.use(express.json());
 app.use(cookieParser())
 
@@ -20,8 +25,8 @@ app.use("/", userRouter)
 connectDB()
   .then(() => {
     console.log("Database connected successfully");
-    app.listen(3000, () => {
-      console.log("http://localhost:3000/");
+    app.listen(7777, () => {
+      console.log("http://localhost:7777/");
     });
   })
   .catch((err) => {
